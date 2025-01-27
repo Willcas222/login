@@ -1,8 +1,8 @@
 package com.example.login.aplication.service;
 
 
-import com.example.login.aplication.port.UserRepository;
-import com.example.login.domain.User;
+import com.example.login.aplication.port.output.UserRepository;
+import com.example.login.domain.model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

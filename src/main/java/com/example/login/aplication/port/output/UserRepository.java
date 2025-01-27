@@ -1,6 +1,6 @@
-package com.example.login.aplication.port;
+package com.example.login.aplication.port.output;
 
-import com.example.login.domain.User;
+import com.example.login.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

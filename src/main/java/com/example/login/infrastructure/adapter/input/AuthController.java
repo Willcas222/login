@@ -1,10 +1,10 @@
-package com.example.login.web;
+package com.example.login.infrastructure.adapter.input;
 
 
 import com.example.login.aplication.service.AuthenticationService;
 import com.example.login.aplication.service.UserService;
-import com.example.login.domain.User;
-import com.example.login.web.payload.UserRequest;
+import com.example.login.domain.model.User;
+import com.example.login.infrastructure.payload.UserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,4 +75,19 @@ public class AuthController {
             return ResponseEntity.status(500).body(Map.of("error", "error en el registro"));
         }
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserRequest userRequest) {
+        try {
+            User updatedUser = authenticationService.updateUser(id, userRequest);
+            return ResponseEntity.ok(Map.of("message", "Usuario actualizado exitosamente", "user", updatedUser));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al actualizar el usuario"));
+        }
+    }
+
+
+
 }

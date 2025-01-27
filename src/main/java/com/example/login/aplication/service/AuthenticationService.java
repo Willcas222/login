@@ -1,9 +1,10 @@
 package com.example.login.aplication.service;
 
-import com.example.login.aplication.port.UserRepository;
-import com.example.login.domain.User;
+import com.example.login.aplication.port.output.UserRepository;
+import com.example.login.domain.model.User;
 
-import com.example.login.infrastructure.adapter.ConfigPaswoord;
+import com.example.login.infrastructure.adapter.config.ConfigPaswoord;
+import com.example.login.infrastructure.payload.UserRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,12 +15,9 @@ import java.util.regex.Pattern;
 public class AuthenticationService {
     private final UserRepository userRepository;
 
-
     public AuthenticationService(UserRepository userRepository) {
         this.userRepository = userRepository;
-
     }
-
 
 
     public Optional<User> login(String username, String plainPassword) {
@@ -72,6 +70,28 @@ public class AuthenticationService {
         Pattern pattern = Pattern.compile(emailRegex);
         return pattern.matcher(email).matches();
     }
+
+    public User updateUser(Long id, UserRequest userRequest) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+
+        if (userRequest.getFullName() != null) {
+            user.setFullName(userRequest.getFullName());
+        }
+        if (userRequest.getBirthDate() != null) {
+            user.setBirthDate(userRequest.getBirthDate());
+        }
+        if (userRequest.getPassword() != null) {
+            byte[] salt = ConfigPaswoord.generateSalt();
+            String encodedSalt = ConfigPaswoord.encodeSalt(salt);
+            String hashedPassword = ConfigPaswoord.hashPassword(userRequest.getPassword(), salt);
+            user.setPassword(hashedPassword);
+            user.setSalt(encodedSalt);
+        }
+
+        return userRepository.save(user);
+    }
+
 }
 
 

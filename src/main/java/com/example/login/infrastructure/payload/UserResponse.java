@@ -1,11 +1,10 @@
-package com.example.login.web.payload;
-
-import lombok.Data;
+package com.example.login.infrastructure.payload;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 
-public class UserRequest {
+public class UserResponse {
 
     private String id;
     private String username;
@@ -13,14 +12,24 @@ public class UserRequest {
     private String fullName;
     private LocalDate birthDate;
     private String idNumber;
+    private Date deletedDate;
 
-    public UserRequest(String id, String username, String password, String fullName, LocalDate birthDate, String idNumber) {
+    public UserResponse(Date deleetedDate,String id, String username, String password, String fullName, LocalDate birthDate, String idNumber) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.birthDate = birthDate;
         this.idNumber = idNumber;
+        this.deletedDate = deleetedDate;
+    }
+
+    public Date getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(Date deleetedDate) {
+        this.deletedDate = deleetedDate;
     }
 
     public String getId() {

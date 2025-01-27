@@ -1,4 +1,4 @@
-package com.example.login.infrastructure.adapter;
+package com.example.login.infrastructure.adapter.config;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
