@@ -26,9 +26,19 @@ public class AuthController {
     }
 
     @GetMapping("/active")
-    public ResponseEntity<User> getActiveUser() {
-        List <User> activeUsers = userService.getAllActiveUsers();
-        return ResponseEntity.ok(activeUsers.get(0));
+    public ResponseEntity<?> getActiveUser() {
+        List<User> activeUsers = userService.getAllActiveUsers();
+
+        if (activeUsers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "No hay usuarios activos"));
+        }
+
+        User user = activeUsers.get(0);
+        return ResponseEntity.ok(Map.of(
+                "id", user.getId(),
+                "fullName", user.getFullName(),
+                "username", user.getUsername()
+        ));
     }
 
     @DeleteMapping("/{id}")
@@ -51,7 +61,7 @@ public class AuthController {
         String password = request.getPassword();
 
         return authenticationService.login(email, password)
-                .map(user -> ResponseEntity.ok(Map.of("message", "Login exitoso", "user", user)))
+                .map(user -> ResponseEntity.ok(Map.of("message", "Login exitoso")))
                 .orElse(ResponseEntity.status(401).body(Map.of("error","Credenciales invalidas")));
     }
 
@@ -80,7 +90,11 @@ public class AuthController {
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserRequest userRequest) {
         try {
             User updatedUser = authenticationService.updateUser(id, userRequest);
-            return ResponseEntity.ok(Map.of("message", "Usuario actualizado exitosamente", "user", updatedUser));
+            return ResponseEntity.ok(Map.of(
+                    "message", "Usuario actualizado exitosamente",
+                    "fullName", updatedUser.getFullName(),
+                    "username", updatedUser.getUsername()
+            ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
