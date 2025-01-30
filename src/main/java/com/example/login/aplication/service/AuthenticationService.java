@@ -1,6 +1,7 @@
 package com.example.login.aplication.service;
 
 import com.example.login.aplication.port.output.UserRepository;
+import com.example.login.domain.model.Role;
 import com.example.login.domain.model.User;
 
 import com.example.login.infrastructure.adapter.config.ConfigPaswoord;
@@ -33,7 +34,7 @@ public class AuthenticationService {
     }
 
 
-    public User register(String email, String plainPassword, String fullName, LocalDate birthDate, String idNumber) {
+    public User register(String email, String plainPassword, String fullName, LocalDate birthDate, String idNumber, Role role) {
 
         if (!isValidEmail(email)){
             throw new IllegalArgumentException("El formato del correo es invalido");
@@ -58,6 +59,7 @@ public class AuthenticationService {
         user.setBirthDate(birthDate);
         user.setIdNumber(idNumber);
         user.setActive(true);
+        user.getRoles().add(role);
 
 
         return userRepository.save(user);

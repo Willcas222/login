@@ -1,8 +1,15 @@
 package com.example.login.infrastructure.payload;
 
+import com.example.login.domain.model.Role;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class UserRequest {
@@ -13,14 +20,25 @@ public class UserRequest {
     private String fullName;
     private LocalDate birthDate;
     private String idNumber;
+    private Role role;
 
-    public UserRequest(String id, String username, String password, String fullName, LocalDate birthDate, String idNumber) {
+    public UserRequest(String id, String username, String password, String fullName, LocalDate birthDate, String idNumber,Role role ) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.birthDate = birthDate;
         this.idNumber = idNumber;
+        this.role = role;
+
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getId() {

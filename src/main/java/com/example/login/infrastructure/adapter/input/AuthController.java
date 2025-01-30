@@ -3,6 +3,7 @@ package com.example.login.infrastructure.adapter.input;
 
 import com.example.login.aplication.service.AuthenticationService;
 import com.example.login.aplication.service.UserService;
+import com.example.login.domain.model.Role;
 import com.example.login.domain.model.User;
 import com.example.login.infrastructure.payload.UserRequest;
 import org.springframework.http.HttpStatus;
@@ -26,19 +27,9 @@ public class AuthController {
     }
 
     @GetMapping("/active")
-    public ResponseEntity<?> getActiveUser() {
-        List<User> activeUsers = userService.getAllActiveUsers();
-
-        if (activeUsers.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "No hay usuarios activos"));
-        }
-
-        User user = activeUsers.get(0);
-        return ResponseEntity.ok(Map.of(
-                "id", user.getId(),
-                "fullName", user.getFullName(),
-                "username", user.getUsername()
-        ));
+    public ResponseEntity<User> getActiveUser() {
+        List <User> activeUsers = userService.getAllActiveUsers();
+        return ResponseEntity.ok(activeUsers.get(0));
     }
 
     @DeleteMapping("/{id}")
@@ -61,9 +52,11 @@ public class AuthController {
         String password = request.getPassword();
 
         return authenticationService.login(email, password)
-                .map(user -> ResponseEntity.ok(Map.of("message", "Login exitoso")))
+                .map(user -> ResponseEntity.ok(Map.of("message", "Login exitoso", "roles", user.getRoles())))
                 .orElse(ResponseEntity.status(401).body(Map.of("error","Credenciales invalidas")));
     }
+
+
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRequest request) {
@@ -73,10 +66,11 @@ public class AuthController {
             String fullName = request.getFullName();
             LocalDate birthDate = request.getBirthDate();
             String idNumber = request.getIdNumber();
+            Role role = request.getRole();
 
 
 
-            User user = authenticationService.register(email, password, fullName, birthDate, idNumber);
+            User user = authenticationService.register(email, password, fullName, birthDate, idNumber, role);
 
             return ResponseEntity.ok(Map.of("message", "Registro exitoso", "id", user.getId()));
         }catch (IllegalArgumentException e){
