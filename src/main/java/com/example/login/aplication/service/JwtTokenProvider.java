@@ -18,16 +18,16 @@ public class JwtTokenProvider {
     private final JwtEncoder jwtEncoder;
 
     public JwtTokenProvider() throws Exception {
-        // Obtener las claves
+
         RSAPrivateKey privateKey = JwtKeyProvider.getPrivateKey();
         RSAPublicKey publicKey = JwtKeyProvider.getPublicKey();
 
-        // Crear RSAKey con las claves pública y privada
+
         RSAKey rsaKey = new RSAKey.Builder(publicKey)
                 .privateKey(privateKey)
                 .build();
 
-        // Usar NimbusJwtEncoder con la clave RSA
+
         this.jwtEncoder = new NimbusJwtEncoder(new ImmutableJWKSet<>(new JWKSet(rsaKey)));
     }
 
