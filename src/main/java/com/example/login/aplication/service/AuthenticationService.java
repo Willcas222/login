@@ -6,30 +6,41 @@ import com.example.login.domain.model.User;
 
 import com.example.login.infrastructure.adapter.config.ConfigPaswoord;
 import com.example.login.infrastructure.payload.UserRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthenticationService(UserRepository userRepository) {
+    public AuthenticationService(UserRepository userRepository,JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+
     }
 
 
-    public Optional<User> login(String username, String plainPassword) {
+    public Optional<String> login(String username, String password) {
         return userRepository.findByUsername(username)
                 .filter(user -> {
-                    if (!user.getActive()) {
-                        return false;
-                    }
+                    // Decodificar el salt almacenado y comparar la contraseña
                     byte[] salt = ConfigPaswoord.decodeSalt(user.getSalt());
-                    String hashedPassword = ConfigPaswoord.hashPassword(plainPassword, salt);
+                    String hashedPassword = ConfigPaswoord.hashPassword(password, salt);
                     return hashedPassword.equals(user.getPassword());
+                })
+                .map(user -> {
+                    List<String> roles = user.getRoles().stream()
+                            .map(role -> "ROLE_" + role.name())
+                            .collect(Collectors.toList());
+                    System.out.println("Roles en el token: " + roles);
+                    return jwtTokenProvider.createToken(user.getUsername(), roles);
                 });
     }
 

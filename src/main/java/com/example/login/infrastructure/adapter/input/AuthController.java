@@ -48,12 +48,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequest request) {
-        String email = request.getUsername();
-        String password = request.getPassword();
-
-        return authenticationService.login(email, password)
-                .map(user -> ResponseEntity.ok(Map.of("message", "Login exitoso", "roles", user.getRoles())))
-                .orElse(ResponseEntity.status(401).body(Map.of("error","Credenciales invalidas")));
+        return authenticationService.login(request.getUsername(), request.getPassword())
+                .map(token -> ResponseEntity.ok(Map.of("token", token)))
+                .orElse(ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas")));
     }
 
 
